@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#050505">
+  <meta name="description" content="Read and listen to the Holy Quran in a lifelike 3D Mushaf with verse-by-verse recitation by Sheikh Mohamed Siddiq al-Minshawi.">
+  <title>المصحف الشريف · Mushaf Reader</title>
+
+  <!-- Fonts: Uthmani script + UI face -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&family=Inter:wght@400;500;600&family=Cairo:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Step 2 of 3 -->
+  <link rel="stylesheet" href="styles.css">
+  <!-- Step 3 of 3 -->
+  <script src="app.js" defer></script>
+
+  <noscript>
+    <style>#loader{display:none}</style>
+  </noscript>
+</head>
+
+<body data-state="loading">
+  <a class="skip-link" href="#scene">Skip to the Mushaf</a>
+
+  <!-- ───────────── SVG asset library (Islamic geometric ornament + icons) ───────────── -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <!-- Eight-pointed star (khatim) -->
+      <symbol id="star8" viewBox="0 0 100 100">
+        <path d="M96 50 L74 60 L82.5 82.5 L60 74 L50 96 L40 74 L17.5 82.5 L26 60 L4 50 L26 40 L17.5 17.5 L40 26 L50 4 L60 26 L82.5 17.5 L74 40 Z"
+              fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+        <circle cx="50" cy="50" r="9" fill="currentColor"/>
+      </symbol>
+
+      <!-- Page corner ornament -->
+      <symbol id="corner" viewBox="0 0 64 64">
+        <path d="M2 62 V2 H62" fill="none" stroke="currentColor" stroke-width="2.5"/>
+        <path d="M11 62 V11 H62" fill="none" stroke="currentColor" stroke-width="1" opacity=".7"/>
+        <use href="#star8" x="1" y="1" width="26" height="26"/>
+        <path d="M34 2 L38 8 L34 14 L30 8 Z M2 34 L8 38 L14 34 L8 30 Z" fill="currentColor" opacity=".85"/>
+      </symbol>
+
+      <!-- Repeating girih strip for the page border -->
+      <pattern id="girih" width="24" height="24" patternUnits="userSpaceOnUse">
+        <path d="M12 2 L22 12 L12 22 L2 12 Z" fill="none" stroke="currentColor" stroke-width="1"/>
+        <circle cx="12" cy="12" r="2.2" fill="currentColor"/>
+      </pattern>
+
+      <!-- Surah banner (cartouche) -->
+      <symbol id="banner" viewBox="0 0 420 64" preserveAspectRatio="none">
+        <path d="M44 4 H376 L408 32 L376 60 H44 L12 32 Z" fill="none" stroke="currentColor" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+        <path d="M48 11 H372 L396 32 L372 53 H48 L24 32 Z" fill="none" stroke="currentColor" stroke-width="1" opacity=".65" vector-effect="non-scaling-stroke"/>
+      </symbol>
+
+      <!-- Verse-end medallion -->
+      <symbol id="medallion" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="5"/>
+        <circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" stroke-width="1.8" opacity=".7"/>
+        <g fill="currentColor">
+          <circle cx="50" cy="3" r="4"/><circle cx="50" cy="97" r="4"/>
+          <circle cx="3" cy="50" r="4"/><circle cx="97" cy="50" r="4"/>
+        </g>
+      </symbol>
+
+      <!-- Icons (24px grid) -->
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></symbol>
+      <symbol id="i-prev" viewBox="0 0 24 24"><path d="M6 5v14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 5L9 12l10 7z" fill="currentColor"/></symbol>
+      <symbol id="i-next" viewBox="0 0 24 24"><path d="M18 5v14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M5 5l10 7-10 7z" fill="currentColor"/></symbol>
+      <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6 3.5h12v17l-6-4.2-6 4.2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+      <symbol id="i-list" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+      <symbol id="i-settings" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="2.4"/><circle cx="8" cy="17" r="2.4"/></g></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></g></symbol>
+      <symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M9 7V4.5h6V7M7 7l1 13h8l1-13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24"><path d="M9 9h10.5v11H9zM5 15V4h10.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- ───────────── Loader ───────────── -->
+  <div id="loader" class="loader" role="status" aria-live="polite">
+    <svg class="loader-star" aria-hidden="true"><use href="#star8"/></svg>
+    <p class="loader-ar" lang="ar" dir="rtl">بسم الله الرحمن الرحيم</p>
+    <p id="loaderText" class="loader-text" data-i18n="loader_prep">Preparing the Mushaf…</p>
+  </div>
+
+  <!-- ───────────── Error banner ───────────── -->
+  <div id="errorBanner" class="error-banner" role="alert" hidden>
+    <p id="errorMsg">Couldn't load this page.</p>
+    <button type="button" id="retryBtn" class="btn btn-text" data-i18n="try_again">Try again</button>
+    <button type="button" id="errorDismiss" class="icon-btn" aria-label="Dismiss message" data-i18n-attr="aria-label:dismiss"><svg aria-hidden="true"><use href="#i-close"/></svg></button>
+  </div>
+
+  <!-- ───────────── Top toolbar (auto-fades): location, page bookmark, settings ───────────── -->
+  <header id="toolbarTop" class="toolbar toolbar-top" role="toolbar" aria-label="Reader controls" data-i18n-attr="aria-label:toolbar_reader">
+    <div class="tb-group">
+      <button type="button" id="jumpBtn" class="btn btn-pill" aria-haspopup="dialog" aria-controls="jumpDialog">
+        <svg aria-hidden="true"><use href="#i-list"/></svg>
+        <span id="locationLabel" dir="auto">Al-Fatihah · Page 1</span>
+      </button>
+    </div>
+
+    <h1 class="brand" lang="ar" dir="rtl">المصحف الشريف</h1>
+
+    <div class="tb-group">
+      <button type="button" id="bookmarkBtn" class="icon-btn" aria-pressed="false" aria-label="Bookmark this page" title="Bookmark this page (B)" data-i18n-attr="title:bm_page_title">
+        <svg aria-hidden="true"><use href="#i-bookmark"/></svg>
+      </button>
+      <button type="button" id="settingsBtn" class="btn btn-pill" aria-expanded="false" aria-controls="settingsPanel" aria-label="Settings and all controls" data-i18n-attr="aria-label:settings_aria">
+        <svg aria-hidden="true"><use href="#i-settings"/></svg>
+        <span data-i18n="settings">Settings</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ───────────── Settings menu: every control in one place ───────────── -->
+  <section id="settingsPanel" class="popover" aria-labelledby="settingsTitle" hidden>
+    <h2 id="settingsTitle" class="pop-title" data-i18n="settings">Settings</h2>
+
+    <div class="sect">
+      <h3 data-i18n="sec_quick">Quick actions</h3>
+      <div class="actions">
+        <button type="button" id="actGo" class="act"><svg aria-hidden="true"><use href="#i-list"/></svg><span data-i18n="goto">Go to</span></button>
+        <button type="button" id="actBmPage" class="act" aria-pressed="false"><svg aria-hidden="true"><use href="#i-bookmark"/></svg><span data-i18n="act_bm_page">Bookmark page</span></button>
+        <button type="button" id="actBmVerse" class="act"><svg aria-hidden="true"><use href="#i-bookmark"/></svg><span data-i18n="act_bm_verse">Bookmark verse</span></button>
+        <button type="button" id="bookmarksBtn" class="act" aria-haspopup="dialog" aria-controls="bookmarksPanel"><svg aria-hidden="true"><use href="#i-list"/></svg><span data-i18n="act_bookmarks">Bookmarks</span><span id="bookmarkCount" class="badge" hidden>0</span></button>
+        <button type="button" id="actPlay" class="act"><svg aria-hidden="true"><use href="#i-play"/></svg><span data-i18n="act_play">Play / pause</span></button>
+        <button type="button" id="fullscreenBtn" class="act"><svg aria-hidden="true"><use href="#i-expand"/></svg><span data-i18n="act_fullscreen">Fullscreen</span></button>
+      </div>
+    </div>
+
+    <div class="sect">
+      <h3 data-i18n="sec_nav">Navigate</h3>
+      <div class="actions four">
+        <button type="button" id="actPrevAyah" class="act"><svg aria-hidden="true"><use href="#i-prev"/></svg><span data-i18n="act_prev_ayah">Previous verse</span></button>
+        <button type="button" id="actNextAyah" class="act"><svg aria-hidden="true"><use href="#i-next"/></svg><span data-i18n="act_next_ayah">Next verse</span></button>
+        <button type="button" id="actPrevPage" class="act"><svg aria-hidden="true"><use href="#i-chevron"/></svg><span data-i18n="act_prev_page">Previous page</span></button>
+        <button type="button" id="actNextPage" class="act"><svg aria-hidden="true" style="transform:scaleX(-1)"><use href="#i-chevron"/></svg><span data-i18n="act_next_page">Next page</span></button>
+      </div>
+    </div>
+
+    <div class="sect">
+      <h3 data-i18n="sec_lang">Language</h3>
+      <div class="seg" role="group" aria-label="Language">
+        <button type="button" data-lang="en" lang="en" aria-pressed="true">English</button>
+        <button type="button" data-lang="ar" lang="ar" aria-pressed="false">العربية</button>
+      </div>
+    </div>
+
+    <div class="sect">
+      <h3 data-i18n="sec_read">Reading</h3>
+      <div class="field">
+        <label for="fontRange"><span data-i18n="text_size">Text size</span> <output id="fontOut">100%</output></label>
+        <div class="range-row" dir="ltr">
+          <button type="button" id="fontMinus" class="btn btn-sq" aria-label="Smaller text" data-i18n-attr="aria-label:smaller">A−</button>
+          <input type="range" id="fontRange" min="70" max="160" step="5" value="100" dir="ltr">
+          <button type="button" id="fontPlus" class="btn btn-sq" aria-label="Larger text" data-i18n-attr="aria-label:larger">A+</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="fontFace" data-i18n="script_style">Script style</label>
+        <select id="fontFace">
+          <option value="amiri-quran" selected>Amiri Quran</option>
+          <option value="scheherazade">Scheherazade New</option>
+        </select>
+      </div>
+      <label class="check"><input type="checkbox" id="reduceMotion"> <span data-i18n="opt_reduce">Reduce page-turn animation</span></label>
+    </div>
+
+    <div class="sect">
+      <h3 data-i18n="sec_audio">Recitation</h3>
+      <div class="field">
+        <label for="reciterSelect" data-i18n="reciter">Reciter</label>
+        <select id="reciterSelect">
+          <option value="ar.minshawi" selected data-i18n="rc_minshawi">Mohamed Siddiq al-Minshawi</option>
+          <option value="ar.alafasy" data-i18n="rc_alafasy">Mishary Alafasy</option>
+          <option value="ar.husary" data-i18n="rc_husary">Mahmoud Khalil al-Husary</option>
+          <option value="ar.abdulbasitmurattal" data-i18n="rc_abdulbasit">Abdul Basit (Murattal)</option>
+          <option value="ar.hudhaify" data-i18n="rc_hudhaify">Ali al-Hudhaify</option>
+          <option value="ar.shaatree" data-i18n="rc_shaatree">Abu Bakr al-Shatri</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="speedSelect" data-i18n="speed">Playback speed</label>
+        <select id="speedSelect">
+          <option value="0.75">0.75×</option>
+          <option value="0.9">0.9×</option>
+          <option value="1" selected>1×</option>
+          <option value="1.15">1.15×</option>
+          <option value="1.3">1.3×</option>
+        </select>
+      </div>
+      <label class="check"><input type="checkbox" id="autoFlip" checked> <span data-i18n="opt_autoflip">Turn the page when recitation reaches it</span></label>
+      <label class="check"><input type="checkbox" id="autoContinue" checked> <span data-i18n="opt_continue">Keep playing to the next verse</span></label>
+    </div>
+
+    <div class="sect">
+      <h3 data-i18n="sec_keys">Keyboard shortcuts</h3>
+      <dl class="keys">
+        <div><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd data-i18n="k_pages">Next / previous page</dd></div>
+        <div><dt><kbd>Shift</kbd> + <kbd>←</kbd> <kbd>→</kbd></dt><dd data-i18n="k_verse">Next / previous verse</dd></div>
+        <div><dt><kbd>Space</kbd></dt><dd data-i18n="k_play">Play / pause</dd></div>
+        <div><dt><kbd>B</kbd></dt><dd data-i18n="k_bm">Bookmark page</dd></div>
+        <div><dt><kbd>G</kbd></dt><dd data-i18n="goto">Go to</dd></div>
+        <div><dt><kbd>F</kbd></dt><dd data-i18n="act_fullscreen">Fullscreen</dd></div>
+        <div><dt><kbd>Home</kbd> <kbd>End</kbd></dt><dd data-i18n="k_ends">First / last page</dd></div>
+        <div><dt><kbd>Esc</kbd></dt><dd data-i18n="k_esc">Close menus</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ───────────── Stage: 3D book ───────────── -->
+  <main id="scene" class="scene" tabindex="-1" aria-label="Quran Mushaf">
+    <div id="book" class="book" data-mode="spread">
+      <div class="book-shadow" aria-hidden="true"></div>
+
+      <!-- Leather cover peeking out beneath the pages -->
+      <div class="book-cover" aria-hidden="true"></div>
+
+      <!-- Stacked page layers = physical thickness -->
+      <div id="edgesLeft" class="edges edges-left" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+      <div id="edgesRight" class="edges edges-right" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+
+      <!-- Static spread: odd (even-numbered pages) on the left, odd pages on the right -->
+      <div id="spread" class="spread">
+        <article id="slotLeft" class="page page-left" data-slot="left" lang="ar" dir="rtl" aria-label="Left page"></article>
+        <article id="slotRight" class="page page-right" data-slot="right" lang="ar" dir="rtl" aria-label="Right page"></article>
+      </div>
+
+      <!-- Turning leaf: front/back faces share one hinge at the spine -->
+      <div id="flipper" class="flipper" aria-hidden="true" data-dir="forward">
+        <div class="flip-face flip-front page" id="flipFront" lang="ar" dir="rtl"></div>
+        <div class="flip-face flip-back page" id="flipBack" lang="ar" dir="rtl"></div>
+        <div class="flip-shade"></div>
+      </div>
+
+      <!-- Spine crease and depth shadows -->
+      <div class="spine" aria-hidden="true">
+        <span class="spine-crease"></span>
+        <span class="spine-shadow spine-shadow-l"></span>
+        <span class="spine-shadow spine-shadow-r"></span>
+      </div>
+
+      <!-- Click/tap zones for turning pages -->
+      <button type="button" id="zoneNext" class="zone zone-left" aria-label="Next page (left arrow)" title="Next page"></button>
+      <button type="button" id="zonePrev" class="zone zone-right" aria-label="Previous page (right arrow)" title="Previous page"></button>
+    </div>
+
+    <!-- Page skeleton cloned by app.js into each slot -->
+    <template id="pageTemplate">
+      <div class="page-paper" aria-hidden="true"></div>
+      <svg class="page-frame" aria-hidden="true" preserveAspectRatio="none">
+        <rect class="frame-outer" x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" fill="none" vector-effect="non-scaling-stroke"/>
+      </svg>
+      <div class="page-border" aria-hidden="true">
+        <svg class="corner c-tl"><use href="#corner"/></svg>
+        <svg class="corner c-tr"><use href="#corner"/></svg>
+        <svg class="corner c-bl"><use href="#corner"/></svg>
+        <svg class="corner c-br"><use href="#corner"/></svg>
+        <svg class="strip strip-t"><rect width="100%" height="100%" fill="url(#girih)"/></svg>
+        <svg class="strip strip-b"><rect width="100%" height="100%" fill="url(#girih)"/></svg>
+      </div>
+      <div class="page-inner">
+        <div class="page-head">
+          <span class="head-surah" data-role="surah-name"></span>
+          <span class="head-juz" data-role="juz"></span>
+        </div>
+        <div class="page-body" data-role="content"></div>
+        <div class="page-foot">
+          <svg class="foot-star" aria-hidden="true"><use href="#star8"/></svg>
+          <span class="foot-num" data-role="page-num"></span>
+          <svg class="foot-star" aria-hidden="true"><use href="#star8"/></svg>
+        </div>
+      </div>
+      <div class="page-gloss" aria-hidden="true"></div>
+    </template>
+  </main>
+
+  <!-- ───────────── Verse menu (tap any verse) ───────────── -->
+  <div id="verseMenu" class="verse-menu" role="menu" hidden>
+    <button type="button" id="vmPlay" role="menuitem"><svg aria-hidden="true"><use href="#i-play"/></svg><span data-i18n="vm_play">Play</span></button>
+    <button type="button" id="vmBm" role="menuitem" aria-pressed="false"><svg aria-hidden="true"><use href="#i-bookmark"/></svg><span id="vmBmText" data-i18n="vm_bm">Bookmark verse</span></button>
+    <button type="button" id="vmCopy" role="menuitem"><svg aria-hidden="true"><use href="#i-copy"/></svg><span data-i18n="vm_copy">Copy</span></button>
+  </div>
+
+  <!-- ───────────── Bottom floating player (auto-fades) ───────────── -->
+  <footer id="toolbarBottom" class="toolbar toolbar-bottom" role="toolbar" aria-label="Recitation player">
+    <div class="player-top">
+      <div class="now">
+        <span class="now-reciter" id="nowReciter">Al-Minshawi</span>
+        <span class="now-ayah" id="nowPlaying" dir="auto" data-i18n="now_idle">Press play to begin recitation</span>
+      </div>
+      <div class="transport">
+        <button type="button" id="prevAyah" class="icon-btn" aria-label="Previous verse" title="Previous verse" data-i18n-attr="aria-label:act_prev_ayah;title:act_prev_ayah">
+          <svg aria-hidden="true"><use href="#i-prev"/></svg>
+        </button>
+        <button type="button" id="playBtn" class="icon-btn play" aria-label="Play recitation" title="Play / pause (Space)" data-i18n-attr="title:play_title">
+          <svg class="ico-play" aria-hidden="true"><use href="#i-play"/></svg>
+          <svg class="ico-pause" aria-hidden="true"><use href="#i-pause"/></svg>
+          <span class="spinner" aria-hidden="true"></span>
+        </button>
+        <button type="button" id="nextAyah" class="icon-btn" aria-label="Next verse" title="Next verse" data-i18n-attr="aria-label:act_next_ayah;title:act_next_ayah">
+          <svg aria-hidden="true"><use href="#i-next"/></svg>
+        </button>
+      </div>
+      <div class="player-time" aria-hidden="true"><span id="timeCur">0:00</span> / <span id="timeDur">0:00</span></div>
+    </div>
+
+    <div class="timelines">
+      <label class="tl">
+        <span class="sr-only" data-i18n="seek_aria">Verse audio position</span>
+        <input type="range" id="seek" min="0" max="1000" value="0" step="1" aria-label="Verse audio position" data-i18n-attr="aria-label:seek_aria">
+      </label>
+      <label class="tl tl-page">
+        <span class="sr-only" data-i18n="page_slider">Page position in the Mushaf</span>
+        <input type="range" id="pageSlider" min="1" max="604" value="1" step="1" dir="rtl" aria-label="Mushaf page" data-i18n-attr="aria-label:page_slider">
+        <output id="pageOut" class="page-out" lang="ar" dir="rtl">١</output>
+      </label>
+    </div>
+  </footer>
+
+  <!-- ───────────── Jump dialog: Surah / Juz / Page ───────────── -->
+  <dialog id="jumpDialog" class="panel" aria-labelledby="jumpTitle">
+    <header class="panel-head">
+      <h2 id="jumpTitle" data-i18n="goto">Go to</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close" data-i18n-attr="aria-label:close"><svg aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="Jump by" data-i18n-attr="aria-label:jump_by">
+      <button type="button" role="tab" id="tabSurah" aria-selected="true" aria-controls="paneSurah" class="tab" data-i18n="tab_surah">Surah</button>
+      <button type="button" role="tab" id="tabJuz" aria-selected="false" aria-controls="paneJuz" class="tab" tabindex="-1" data-i18n="tab_juz">Juz</button>
+      <button type="button" role="tab" id="tabPage" aria-selected="false" aria-controls="panePage" class="tab" tabindex="-1" data-i18n="tab_page">Page</button>
+    </div>
+
+    <div id="paneSurah" role="tabpanel" aria-labelledby="tabSurah" class="pane">
+      <label class="search">
+        <svg aria-hidden="true"><use href="#i-search"/></svg>
+        <input type="search" id="surahSearch" placeholder="Search by name or number" autocomplete="off" aria-label="Search surahs" data-i18n-attr="placeholder:search_ph;aria-label:search_aria">
+      </label>
+      <ul id="surahList" class="list" aria-label="Surahs"></ul>
+      <p id="surahEmpty" class="empty" hidden data-i18n="surah_empty">No surah matches that search.</p>
+    </div>
+
+    <div id="paneJuz" role="tabpanel" aria-labelledby="tabJuz" class="pane" hidden>
+      <ul id="juzList" class="list grid-list" aria-label="Juz"></ul>
+    </div>
+
+    <div id="panePage" role="tabpanel" aria-labelledby="tabPage" class="pane" hidden>
+      <div class="page-jump">
+        <label for="pageInput" data-i18n="page_label">Page number (1–604)</label>
+        <div class="range-row">
+          <input type="number" id="pageInput" min="1" max="604" value="1" inputmode="numeric" dir="ltr">
+          <button type="button" id="pageGo" class="btn btn-primary" data-i18n="open_page">Open page</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ───────────── Bookmarks drawer: pages and verses ───────────── -->
+  <dialog id="bookmarksPanel" class="panel panel-side" aria-labelledby="bmTitle">
+    <header class="panel-head">
+      <h2 id="bmTitle" data-i18n="bm_title">Bookmarks</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close" data-i18n-attr="aria-label:close"><svg aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <ul id="bookmarkList" class="list" aria-label="Saved bookmarks"></ul>
+    <p id="bookmarkEmpty" class="empty" data-i18n="bm_empty">Nothing saved yet.</p>
+    <footer class="panel-foot">
+      <button type="button" id="clearBookmarks" class="btn btn-text"><svg aria-hidden="true"><use href="#i-trash"/></svg> <span data-i18n="clear_all">Clear all</span></button>
+    </footer>
+  </dialog>
+
+  <!-- Toast + screen-reader announcements -->
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <div id="srLive" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Audio engine (src assigned by app.js: https://cdn.islamic.network/quran/audio/128/{reciter}/{ayahNumber}.mp3) -->
+  <audio id="audio" preload="auto" crossorigin="anonymous"></audio>
+</body>
+</html>
